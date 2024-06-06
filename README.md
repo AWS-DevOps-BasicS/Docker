@@ -82,7 +82,7 @@
   ```
 * Taken a sample node js application [refer here](https://medium.com/@sadahamranawake/the-easiest-way-to-install-nodejs-in-amazon-linux-2-2a099b41f743) for instructions to be followed.
 ### Manual Steps
- **Step-1** Install nodejs
+* **Step-1** Install nodejs
 
     ```
     curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash
@@ -91,7 +91,7 @@
     node -v
     npm -v
     ```
- **Step-2:** Downloading the sample project
+* **Step-2:** Downloading the sample project
 
     ```
     git clone https://github.com/betterstack-community/chucknorris
