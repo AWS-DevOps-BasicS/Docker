@@ -92,12 +92,14 @@
      npm -v
      ```
 **Step-2:** Downloading the sample project
+
      ```
      git clone https://github.com/betterstack-community/chucknorris
      cd chucknorris
      npm install
      npm run dev
-    ```
+     ```
+
 * Allow 3000 port in security group's inbound rules as the application run on 3000 port.
   ![preview](images/docker1.png)
   ![preview](images/docker2.png)
