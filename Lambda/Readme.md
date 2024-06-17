@@ -1,4 +1,4 @@
-## Lambda Function to stop an EC2 Instance
+## Lambda Function to stop EC2 Instances
 ### Step 1: Create an IAM Role for Lambda
 1. **Create a New IAM Role:**
 
@@ -142,3 +142,86 @@ def lambda_handler(event, context):
   ![preview](images/lambda11.png)
   ![preview](images/lambda12.png)
   ![preview](images/lambda13.png)
+
+## Lambda Function to start EC2 Instances
+1. **Create the Lambda Function:**
+
+* Go to the Lambda console.
+* Click on "_Create function_".
+* Choose "_Author from scratch_".
+* Enter a name for the function, such as _StartEC2Instances_.
+* Choose Python 3.x as the runtime.
+* Under "_Permissions_", choose "Use an existing role" and select the IAM role you created earlier (LambdaEC2StartRole) or you can use the above role where I have give ec2fullaccess
+2. **Write the Function Code:**
+
+* Replace the default code in the Lambda function editor with the following code to start instances:
+
+```python
+import json
+import boto3
+
+def lambda_handler(event, context):
+    ec2 = boto3.client('ec2')
+    
+    # Instance IDs from the event
+    instance_ids = event.get('instance_ids', [])
+    
+    if not instance_ids:
+        return {
+            'statusCode': 400,
+            'body': json.dumps('No instance IDs provided.')
+        }
+    
+    try:
+        # Start the instances
+        response = ec2.start_instances(InstanceIds=instance_ids)
+        
+        # Check the response for success
+        starting_instances = response.get('StartingInstances', [])
+        started_instances = [inst.get('InstanceId') for inst in starting_instances]
+        return {
+            'statusCode': 200,
+            'body': json.dumps(f'Instances {started_instances} are starting successfully!')
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps(f'Error starting instances: {str(e)}')
+        }
+```
+2. **Deploy the Function:**
+
+* Click "_Deploy_" to save the changes.
+3. **Increase the Timeout Setting:**
+
+* In the function configuration, locate the "_Basic settings_" section.
+* Click the "_Edit_" button.
+* Increase the timeout value to a higher number, such as 60 seconds.
+* Click "_Save_" to apply the changes.
+* Testing the Function
+4. **Create a Test Event:**
+
+* Click the "_Test_" button.
+* Use the following JSON structure to specify multiple instance IDs:
+
+```json
+{
+  "instance_ids": ["i-xxxxxxxxxxxxxxxxx", "i-yyyyyyyyyyyyyyyyy", "i-zzzzzzzzzzzzzzzzz"]
+}
+```
+Replace "i-xxxxxxxxxxxxxxxxx", "i-yyyyyyyyyyyyyyyyy", and "i-zzzzzzzzzzzzzzzzz" with your actual EC2 instance IDs.
+5. **Run the Test:**
+
+* Click "_Test_" to execute the Lambda function.
+* Check the EC2 console to confirm that the instances are starting.
+### Automation with CloudWatch Events
+* If you want to automate this Lambda function to run on a schedule, you can use CloudWatch Events:
+
+1. **Create a CloudWatch Rule:**
+* Go to the CloudWatch console.
+* Click on "_Rules_" and then "Create rule".
+* Choose "_Event Source_" and then "Schedule".
+Set the schedule expression (e.g., cron(0 9 ? * MON-FRI *) to start instances every weekday at 9:00 AM UTC).
+* In "Targets", click "_Add target_" and select "_Lambda function_".
+* Choose your Lambda function (StartEC2Instances).
+* Click "_Configure details_", give the rule a name and description, and create the r
