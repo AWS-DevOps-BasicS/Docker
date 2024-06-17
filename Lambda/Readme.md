@@ -39,35 +39,33 @@ import boto3
 def lambda_handler(event, context):
     ec2 = boto3.client('ec2')
     
-    # Instance ID from the event
-    instance_id = event.get('instance_id', 'i-xxxxxxxxxxxxxxxxx')
+    # Instance IDs from the event
+    instance_ids = event.get('instance_ids', [])
+    
+    if not instance_ids:
+        return {
+            'statusCode': 400,
+            'body': json.dumps('No instance IDs provided.')
+        }
     
     try:
-        # Stop the instance
-        response = ec2.stop_instances(InstanceIds=[instance_id])
+        # Stop the instances
+        response = ec2.stop_instances(InstanceIds=instance_ids)
         
         # Check the response for success
         stopping_instances = response.get('StoppingInstances', [])
-        if stopping_instances:
-            instance_state = stopping_instances[0].get('CurrentState', {}).get('Name')
-            return {
-                'statusCode': 200,
-                'body': json.dumps(f'Instance {instance_id} is {instance_state} successfully!')
-            }
-        else:
-            return {
-                'statusCode': 500,
-                'body': json.dumps('Failed to stop the instance.')
-            }
+        stopped_instances = [inst.get('InstanceId') for inst in stopping_instances]
+        return {
+            'statusCode': 200,
+            'body': json.dumps(f'Instances {stopped_instances} are stopping successfully!')
+        }
     except Exception as e:
         return {
             'statusCode': 500,
-            'body': json.dumps(f'Error stopping instance: {str(e)}')
+            'body': json.dumps(f'Error stopping instances: {str(e)}')
         }
-
 ```
-* This function expects the instance ID to be passed as an event parameter. Replace 'i-xxxxxxxxxxxxxxxxx' with your instance ID if you want to hard-code it.
-  
+
   ![preview](images/lambda4.png)
 
 1. **Deploy the Function:**
@@ -81,7 +79,7 @@ def lambda_handler(event, context):
 
 ```json
 {
-  "instance_id": "i-xxxxxxxxxxxxxxxxx"
+  "instance_ids": ["i-xxxxxxxxxxxxxxxxx", "i-yyyyyyyyyyyyyyyyy", "i-zzzzzzzzzzzzzzzzz"]
 }
 ```
 * Replace "i-xxxxxxxxxxxxxxxxx" with your actual EC2 instance ID.
