@@ -141,4 +141,4 @@ def lambda_handler(event, context):
   
   ![preview](images/lambda11.png)
   ![preview](images/lambda12.png)
-  1[preview](images/lambda13.png)
+  ![preview](images/lambda13.png)
