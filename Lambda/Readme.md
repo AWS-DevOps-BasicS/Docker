@@ -142,6 +142,7 @@ def lambda_handler(event, context):
   ![preview](images/lambda11.png)
   ![preview](images/lambda12.png)
   ![preview](images/lambda13.png)
+  []
 
 ## Lambda Function to start EC2 Instances
 1. **Create the Lambda Function:**
